@@ -418,18 +418,18 @@
 
   .undo-end-btn {
     width: 100%;
-    margin-top: 10px;
-    background: #fff;
-    color: var(--blue-700);
-    border: 1px solid var(--line);
-    padding: 12px;
+    margin-top: 12px;
+    background: var(--yellow);
+    color: #6b4d00;
+    border: 2px solid var(--yellow-border);
+    padding: 14px;
     border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
     transition: background 0.15s;
   }
-  .undo-end-btn:hover { background: var(--blue-050); }
+  .undo-end-btn:hover { background: var(--yellow-border); }
 
   .hint {
     margin-top: 18px;
@@ -482,7 +482,7 @@
       <div class="page-footer" id="pageFooter">
         <div class="summary" id="summary"></div>
         <button class="end-day-btn" id="endDayBtn">本日終了 → 翌日ページへ</button>
-        <button class="undo-end-btn" id="undoEndBtn" style="display:none;">↩ 直前の「本日終了」を取り消す（前日に戻す）</button>
+        <button class="undo-end-btn" id="undoEndBtn" style="display:none;">↩ 「本日終了」を取り消して前日に戻す（押し間違えたとき用）</button>
       </div>
     </div>
 
@@ -492,7 +492,7 @@
       📅ボタンで締切日を設定・変更・削除できます（任意）。当日は黄色・超過は赤で目立ちます。<br>
       入力・編集中の改行は Enter または Shift+Enter、確定（完了）は Alt+Enter です。<br>
       各項目左の ☰ をドラッグすると、タスクの順番を入れ替えられます。<br>
-      「本日終了」を押し間違えても、直後なら下の「取り消す」ボタンで前日に戻せます。<br>
+      「本日終了」を押し間違えたら、翌日ページ下の黄色い「取り消す」ボタンで前日に戻せます（翌日に追加・変更した分は残ります）。<br>
       Googleでログインすると、各自のGoogleドライブに保存され、PC・携帯のどの端末でも同じ内容が表示されます（3人それぞれのアカウントで各自のタスクのみ表示）。
     </p>
   </div>
@@ -748,14 +748,19 @@
       + "よろしいですか？";
     if (!window.confirm(msg)) return;
 
+    var next = addDays(cur, 1);
+    var carriedIds = [];
+    for (var j = 0; j < carried.length; j++) carriedIds.push(carried[j].id);
+
     state.undoEndDay = {
-      currentDate: cur,
-      days: JSON.parse(JSON.stringify(state.days)),
+      prevDate: cur,
+      nextDate: next,
+      daySnapshot: JSON.parse(JSON.stringify(list)),
+      carriedIds: carriedIds,
       ts: Date.now()
     };
 
     state.days[cur] = kept;
-    var next = addDays(cur, 1);
     var existing = state.days[next] || [];
     state.days[next] = carried.concat(existing);
     state.currentDate = next;
@@ -765,15 +770,43 @@
   }
 
   function undoEndDay() {
-    if (!state.undoEndDay) return;
+    var snap = state.undoEndDay;
+    if (!snap) return;
     if (!window.confirm(
-      "「本日終了」を取り消して " + state.undoEndDay.currentDate + " に戻します。\n"
-      + "※終了後に追加・変更した内容は失われます。\n\nよろしいですか？"
+      "「本日終了」を取り消して " + snap.prevDate + " に戻します。\n"
+      + "翌日ページで追加・変更した内容はそのまま残します。\n\nよろしいですか？"
     )) return;
-    state.days = state.undoEndDay.days;
-    state.currentDate = state.undoEndDay.currentDate;
+
+    var prev = snap.prevDate;
+    var next = snap.nextDate;
+    var carriedSet = {};
+    for (var i = 0; i < snap.carriedIds.length; i++) carriedSet[snap.carriedIds[i]] = true;
+
+    var byId = {};
+    var dPrev = state.days[prev] || [];
+    var dNext = state.days[next] || [];
+    var k;
+    for (k = 0; k < dPrev.length; k++) byId[dPrev[k].id] = dPrev[k];
+    for (k = 0; k < dNext.length; k++) byId[dNext[k].id] = dNext[k];
+
+    // 元の並び順で前日ページを復元（編集後の内容があればそれを優先）
+    var rebuilt = [];
+    for (k = 0; k < snap.daySnapshot.length; k++) {
+      var orig = snap.daySnapshot[k];
+      rebuilt.push(byId[orig.id] ? byId[orig.id] : orig);
+    }
+    state.days[prev] = rebuilt;
+
+    // 翌日ページからは「繰り越した分」だけ除き、後から追加・変更した分は残す
+    var keepNext = [];
+    for (k = 0; k < dNext.length; k++) {
+      if (!carriedSet[dNext[k].id]) keepNext.push(dNext[k]);
+    }
+    state.days[next] = keepNext;
+
+    state.currentDate = prev;
     delete state.undoEndDay;
-    viewDate = state.currentDate;
+    viewDate = prev;
     save();
     render();
   }
