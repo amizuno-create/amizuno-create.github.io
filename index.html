@@ -158,6 +158,12 @@
     border-left: 5px solid var(--yellow-border);
     padding-left: 17px;
   }
+  .task.urgent.done {
+    background: #fff;
+    border-left-color: transparent;
+  }
+  .task.urgent.done .txt { font-weight: 400; }
+  .task.urgent.done .badge-urgent { opacity: 0.4; }
 
   .task .cb {
     width: 22px;
@@ -430,6 +436,14 @@
     transition: background 0.15s;
   }
   .undo-end-btn:hover { background: var(--yellow-border); }
+  .undo-end-btn.is-disabled {
+    background: #f1f4f8;
+    color: #9aa9b6;
+    border-color: var(--line);
+    cursor: not-allowed;
+    font-weight: 600;
+  }
+  .undo-end-btn.is-disabled:hover { background: #f1f4f8; }
 
   .hint {
     margin-top: 18px;
@@ -482,7 +496,7 @@
       <div class="page-footer" id="pageFooter">
         <div class="summary" id="summary"></div>
         <button class="end-day-btn" id="endDayBtn">本日終了 → 翌日ページへ</button>
-        <button class="undo-end-btn" id="undoEndBtn" style="display:none;">↩ 「本日終了」を取り消して前日に戻す（押し間違えたとき用）</button>
+        <button class="undo-end-btn is-disabled" id="undoEndBtn" disabled>↩ 取り消し（「本日終了」を押すと使えます）</button>
       </div>
     </div>
 
@@ -491,8 +505,9 @@
       ★ボタンで「本日中」の目印を付けると、その項目が薄い黄色で目立ちます。<br>
       📅ボタンで締切日を設定・変更・削除できます（任意）。当日は黄色・超過は赤で目立ちます。<br>
       入力・編集中の改行は Enter または Shift+Enter、確定（完了）は Alt+Enter です。<br>
+      新規タスクは「一番上」に追加されます。締切を設定したタスクは「期限が近い順」に自動で並びます（期限なしのタスクが上、期限ありがその下に期限の近い順）。<br>
       各項目左の ☰ をドラッグすると、タスクの順番を入れ替えられます。<br>
-      「本日終了」を押し間違えたら、翌日ページ下の黄色い「取り消す」ボタンで前日に戻せます（翌日に追加・変更した分は残ります）。<br>
+      「本日終了」を押し間違えたら、すぐ下の「取り消し」ボタン（終了後に黄色く押せるようになります）で前日に戻せます（翌日に追加・変更した分は残ります）。<br>
       Googleでログインすると、各自のGoogleドライブに保存され、PC・携帯のどの端末でも同じ内容が表示されます（3人それぞれのアカウントで各自のタスクのみ表示）。
     </p>
   </div>
@@ -620,23 +635,44 @@
     return (d.getMonth() + 1) + "/" + d.getDate() + "(" + WD[d.getDay()] + ")";
   }
 
+  function placementIndex(list, t) {
+    // 期限なし: 一番上（先頭）
+    if (!t.deadline) return 0;
+    // 期限あり: 期限なしタスクの後ろ、期限ありの中で日付昇順の位置に挿入
+    var i = 0;
+    while (i < list.length && !list[i].deadline) i++;
+    while (i < list.length && list[i].deadline && list[i].deadline <= t.deadline) i++;
+    return i;
+  }
+
   function addTask(text, deadline) {
     text = text.trim();
     if (!text) return;
-    tasksOf(state.currentDate).push({
+    var t = {
       id: Date.now() + "-" + Math.random().toString(36).slice(2, 8),
       text: text,
       done: false,
       urgent: false,
       deadline: deadline || ""
-    });
+    };
+    var list = tasksOf(state.currentDate);
+    list.splice(placementIndex(list, t), 0, t);
     save();
     render();
   }
 
   function setDeadline(id, value) {
-    var t = findTask(id);
-    if (t) { t.deadline = value || ""; save(); render(); }
+    var list = tasksOf(state.currentDate);
+    var i = indexOfId(list, id);
+    if (i < 0) return;
+    var t = list[i];
+    var newVal = value || "";
+    if ((t.deadline || "") === newVal) return;
+    t.deadline = newVal;
+    list.splice(i, 1);
+    list.splice(placementIndex(list, t), 0, t);
+    save();
+    render();
   }
 
   function findTask(id) {
@@ -824,8 +860,16 @@
     document.getElementById("pastBanner").style.display = isCurrent ? "none" : "block";
     document.getElementById("addRow").style.display = isCurrent ? "flex" : "none";
     document.getElementById("pageFooter").style.display = isCurrent ? "block" : "none";
-    document.getElementById("undoEndBtn").style.display =
-      (isCurrent && state.undoEndDay) ? "block" : "none";
+    var undoBtn = document.getElementById("undoEndBtn");
+    if (state.undoEndDay) {
+      undoBtn.disabled = false;
+      undoBtn.className = "undo-end-btn";
+      undoBtn.textContent = "↩ 「本日終了」を取り消して前日に戻す";
+    } else {
+      undoBtn.disabled = true;
+      undoBtn.className = "undo-end-btn is-disabled";
+      undoBtn.textContent = "↩ 取り消し（「本日終了」を押すと使えます）";
+    }
 
     document.getElementById("prevBtn").disabled = viewDate <= earliestDate();
     document.getElementById("nextBtn").disabled = viewDate >= state.currentDate;
