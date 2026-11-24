@@ -445,6 +445,55 @@
   }
   .undo-end-btn.is-disabled:hover { background: #f1f4f8; }
 
+  /* ---- 上部の日程更新バー ---- */
+  .top-end-bar {
+    display: flex;
+    gap: 8px;
+    padding: 10px 22px;
+    background: var(--blue-050);
+    border-bottom: 1px solid var(--line);
+  }
+  .top-end-bar .end-day-btn {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(21, 101, 192, 0.25);
+  }
+  .top-end-bar .undo-end-btn {
+    width: auto;
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* ---- 日程更新ダイアログ ---- */
+  .next-opts { display: flex; flex-direction: column; gap: 8px; margin: 12px 0 4px; }
+  .next-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    background: #fff;
+  }
+  .next-opt.on { border-color: var(--blue-500); background: var(--blue-050); }
+  .next-opt input[type="radio"] { width: 16px; height: 16px; accent-color: var(--blue-700); flex-shrink: 0; }
+  .next-opt .grow { flex: 1; min-width: 0; }
+  .next-opt .opt-title { font-weight: 700; color: var(--blue-900); }
+  .next-opt .opt-date { font-size: 12px; color: var(--gray-text); }
+  .next-opt input[type="date"] {
+    padding: 6px 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .skip-note { font-size: 12px; color: #b45309; margin-top: 6px; min-height: 1em; }
+  .end-summary { background: var(--blue-050); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.7; }
+
   /* ---- 本文＋メタ行（状態・タグ） ---- */
   .task .body {
     flex: 1;
@@ -698,6 +747,11 @@
         過去のページを表示中です（閲覧のみ・編集できません）
       </div>
 
+      <div class="top-end-bar" id="topEndBar">
+        <button class="end-day-btn" id="endDayBtnTop">本日終了 → 次のページへ</button>
+        <button class="undo-end-btn is-disabled" id="undoEndBtnTop" disabled title="「本日終了」の取り消し">↩ 取り消し</button>
+      </div>
+
       <div class="add-row" id="addRow">
         <textarea id="taskInput" rows="2" maxlength="2000" placeholder="タスクを入力（長文OK）。改行: Enter / Shift+Enter、追加(完了): Alt+Enter または「追加」ボタン"></textarea>
         <input type="date" id="dueInput" title="締切日（任意・空欄でOK）">
@@ -716,7 +770,7 @@
 
       <div class="page-footer" id="pageFooter">
         <div class="summary" id="summary"></div>
-        <button class="end-day-btn" id="endDayBtn">本日終了 → 翌日ページへ</button>
+        <button class="end-day-btn" id="endDayBtn">本日終了 → 次のページへ</button>
         <button class="undo-end-btn is-disabled" id="undoEndBtn" disabled>↩ 取り消し（「本日終了」を押すと使えます）</button>
       </div>
     </div>
@@ -731,7 +785,8 @@
       ⏳ボタンで「返事待ち・確認待ち・承認待ち・保留」を付けると、リスト下の「相手待ち」欄に移り、毎日そのまま繰り越されます。相手やフォロー日もメモでき、フォロー日が来るとオレンジで知らせます。戻ってきたら⏳→「戻ってきた」で一番上に戻ります。<br>
       🏷ボタンでタスクにタグを付けられます。上のタグをクリックすると絞り込み表示になり、その状態で追加したタスクには自動でそのタグが付きます。<br>
       「🔁 繰り返し」で、毎日・平日・毎週○曜・毎月○日（月末も可）に自動で出るタスクを登録できます。前回分が未完了のまま残っている場合は重複して出しません。<br>
-      「本日終了」を押し間違えたら、すぐ下の「取り消し」ボタン（終了後に黄色く押せるようになります）で前日に戻せます（翌日に追加・変更した分は残ります）。<br>
+      「本日終了」（上部・下部どちらのボタンでも可）を押すと、次のページの日付を「翌日」「次の営業日（土日・祝日を飛ばす）」「日付を指定」から選べます。連休や出張で数日空くときに使ってください。<br>
+      「本日終了」を押し間違えたら、「取り消し」ボタン（終了後に黄色く押せるようになります）で前日に戻せます（翌日に追加・変更した分は残ります）。<br>
       Googleでログインすると、各自のGoogleドライブに保存され、PC・携帯のどの端末でも同じ内容が表示されます（3人それぞれのアカウントで各自のタスクのみ表示）。
     </p>
   </div>
@@ -786,6 +841,80 @@
   function parseDate(dateStr) {
     var p = dateStr.split("-");
     return new Date(+p[0], +p[1] - 1, +p[2]);
+  }
+
+  /* ---- 日本の祝日（振替休日・国民の休日を含む） ---- */
+  var holidayCache = {};
+  function nthMonday(y, m, n) {
+    var first = new Date(y, m - 1, 1).getDay();
+    return 1 + ((8 - first) % 7) + (n - 1) * 7;
+  }
+  function baseHolidays(y) {
+    var h = {};
+    function add(m, d, name) { h[y + "-" + pad(m) + "-" + pad(d)] = name; }
+    add(1, 1, "元日");
+    add(1, nthMonday(y, 1, 2), "成人の日");
+    add(2, 11, "建国記念の日");
+    if (y >= 2020) add(2, 23, "天皇誕生日");
+    add(3, Math.floor(20.8431 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4)), "春分の日");
+    add(4, 29, "昭和の日");
+    add(5, 3, "憲法記念日");
+    add(5, 4, "みどりの日");
+    add(5, 5, "こどもの日");
+    add(7, nthMonday(y, 7, 3), "海の日");
+    add(8, 11, "山の日");
+    add(9, nthMonday(y, 9, 3), "敬老の日");
+    add(9, Math.floor(23.2488 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4)), "秋分の日");
+    add(10, nthMonday(y, 10, 2), "スポーツの日");
+    add(11, 3, "文化の日");
+    add(11, 23, "勤労感謝の日");
+    return h;
+  }
+  function holidaysOf(y) {
+    if (holidayCache[y]) return holidayCache[y];
+    var base = baseHolidays(y);
+    var h = baseHolidays(y);
+    var keys = Object.keys(h).sort();
+    // 振替休日：日曜の祝日 → 次の祝日でない日
+    keys.forEach(function (k) {
+      if (parseDate(k).getDay() === 0) {
+        var d = addDays(k, 1);
+        while (h[d]) d = addDays(d, 1);
+        h[d] = "振替休日";
+      }
+    });
+    // 国民の休日：祝日に挟まれた平日
+    keys.forEach(function (k) {
+      var mid = addDays(k, 1), after = addDays(k, 2);
+      if (!h[mid] && base[k] && base[after] && parseDate(mid).getDay() !== 0) h[mid] = "国民の休日";
+    });
+    holidayCache[y] = h;
+    return h;
+  }
+  function holidayName(dateStr) {
+    return holidaysOf(+dateStr.slice(0, 4))[dateStr] || "";
+  }
+  function isOffDay(dateStr) {
+    var w = parseDate(dateStr).getDay();
+    return w === 0 || w === 6 || !!holidayName(dateStr);
+  }
+  function nextBusinessDay(dateStr) {
+    var d = addDays(dateStr, 1);
+    for (var i = 0; i < 60 && isOffDay(d); i++) d = addDays(d, 1);
+    return d;
+  }
+  function labelDate(dateStr) {
+    var d = parseDate(dateStr);
+    var hn = holidayName(dateStr);
+    return (d.getMonth() + 1) + "月" + d.getDate() + "日（" + WD[d.getDay()] + "）" + (hn ? " " + hn : "");
+  }
+  // a と b の間（両端を含まない）の休み・平日の内訳
+  function describeGap(a, b) {
+    var off = [], work = 0;
+    for (var d = addDays(a, 1); d < b; d = addDays(d, 1)) {
+      if (isOffDay(d)) off.push(d); else work++;
+    }
+    return { off: off, work: work, total: daysBetween(a, b) - 1 };
   }
 
   /* ---- 状態管理 ---- */
@@ -973,13 +1102,20 @@
   }
 
   // 現在のページ（state.currentDate）に該当する繰り返しタスクを出す
-  function generateRecurring() {
+  // sinceDate を渡すと、その翌日〜現在のページまで（飛ばした日を含む）に該当した分もまとめて出す（各ルール1件まで）
+  function generateRecurring(sinceDate) {
     var cur = state.currentDate;
+    var from = sinceDate && sinceDate < cur ? addDays(sinceDate, 1) : cur;
     var changed = false;
     state.recurring.forEach(function (r) {
       if (r.paused) return;
       if (r.lastDate && r.lastDate >= cur) return;
-      if (!ruleMatches(r, cur)) return;
+      var hit = "";
+      for (var d = cur; d >= from; d = addDays(d, -1)) {
+        if (r.lastDate && r.lastDate >= d) break;
+        if (ruleMatches(r, d)) { hit = d; break; }
+      }
+      if (!hit) return;
       r.lastDate = cur;
       changed = true;
       var list = tasksOf(cur);
@@ -992,7 +1128,7 @@
         text: r.text,
         done: false,
         urgent: !!r.urgent,
-        deadline: r.dueSameDay ? cur : "",
+        deadline: r.dueSameDay ? hit : "",
         tags: (r.tags || []).filter(findTag),
         recurId: r.id
       };
@@ -1180,14 +1316,111 @@
     }
 
     var waitN = carried.filter(function (x) { return !!x.wait; }).length;
-    var msg = "本日（" + cur + "）を終了します。\n\n"
-      + "完了: " + kept.length + " 件（このページに記録として残ります）\n"
-      + "未完了: " + carried.length + " 件（書いた順のまま翌日ページへ移ります）"
-      + (waitN ? "\n　うち相手待ち: " + waitN + " 件（状態ごと引き継ぎます）" : "") + "\n\n"
-      + "よろしいですか？";
-    if (!window.confirm(msg)) return;
 
-    var next = addDays(cur, 1);
+    openModal("本日終了 → 次のページへ", function (c) {
+      var tomorrow = addDays(cur, 1);
+      var biz = nextBusinessDay(cur);
+      var today = todayStr();
+      var opts = [{ key: "tomorrow", title: "翌日", date: tomorrow }];
+      if (biz !== tomorrow) opts.push({ key: "biz", title: "次の営業日（土日・祝日を飛ばす）", date: biz });
+      if (today > tomorrow && today !== biz) opts.push({ key: "today", title: "今日の日付", date: today });
+      opts.push({ key: "custom", title: "日付を指定", date: "" });
+
+      var sel = biz !== tomorrow ? "biz" : "tomorrow";
+      var customDate = today > tomorrow ? today : addDays(biz, biz === tomorrow ? 1 : 0);
+
+      c.appendChild(el("div", "muted", "本日：" + labelDate(cur) + "　次に開くページの日付を選んでください。"));
+      var box = el("div", "next-opts");
+      c.appendChild(box);
+      var note = el("div", "skip-note");
+      var radios = [];
+      var dateIn = null;
+
+      function chosen() {
+        if (sel === "custom") return dateIn && dateIn.value > cur ? dateIn.value : "";
+        for (var i = 0; i < opts.length; i++) if (opts[i].key === sel) return opts[i].date;
+        return "";
+      }
+      function refresh() {
+        radios.forEach(function (x) { x.lab.className = "next-opt" + (x.key === sel ? " on" : ""); x.rb.checked = x.key === sel; });
+        var n = chosen();
+        if (!n) { note.textContent = "本日より後の日付を指定してください。"; okBtn.disabled = true; return; }
+        okBtn.disabled = false;
+        var g = describeGap(cur, n);
+        if (g.total <= 0) { note.textContent = ""; }
+        else {
+          note.textContent = g.total + "日分を飛ばします（休み " + g.off.length + "日"
+            + (g.work ? "・平日 " + g.work + "日" : "") + "）。飛ばした日のページは作られません。";
+        }
+        okBtn.textContent = labelDate(n).split(" ")[0] + " のページへ進む";
+      }
+
+      opts.forEach(function (o) {
+        var lab = el("label", "next-opt");
+        var rb = document.createElement("input");
+        rb.type = "radio";
+        rb.name = "nextDateOpt";
+        lab.appendChild(rb);
+        var g = el("div", "grow");
+        g.appendChild(el("div", "opt-title", o.title));
+        if (o.date) g.appendChild(el("div", "opt-date", labelDate(o.date)));
+        lab.appendChild(g);
+        if (o.key === "custom") {
+          dateIn = document.createElement("input");
+          dateIn.type = "date";
+          dateIn.min = tomorrow;
+          dateIn.value = customDate;
+          var dl = el("div", "opt-date", labelDate(customDate));
+          g.appendChild(dl);
+          dateIn.addEventListener("input", function () {
+            dl.textContent = dateIn.value ? labelDate(dateIn.value) : "";
+            sel = "custom";
+            refresh();
+          });
+          dateIn.addEventListener("click", function () { sel = "custom"; refresh(); });
+          lab.appendChild(dateIn);
+        }
+        rb.addEventListener("change", function () { sel = o.key; refresh(); });
+        radios.push({ key: o.key, lab: lab, rb: rb });
+        box.appendChild(lab);
+      });
+      c.appendChild(note);
+
+      var sum = el("div", "end-summary");
+      sum.style.marginTop = "12px";
+      sum.appendChild(el("div", null, "完了：" + kept.length + " 件（このページに記録として残ります）"));
+      sum.appendChild(el("div", null, "未完了：" + carried.length + " 件（書いた順のまま次のページへ移ります）"
+        + (waitN ? "　うち相手待ち " + waitN + " 件" : "")));
+      c.appendChild(sum);
+
+      var act = el("div", "pop-actions");
+      var cancel = el("button", "btn sub", "キャンセル");
+      cancel.style.flex = "0 0 auto";
+      cancel.addEventListener("click", closeModal);
+      var okBtn = el("button", "btn", "");
+      okBtn.addEventListener("click", function () {
+        var n = chosen();
+        if (!n) return;
+        closeModal();
+        doEndDay(n);
+      });
+      act.appendChild(cancel);
+      act.appendChild(okBtn);
+      c.appendChild(act);
+      refresh();
+      okBtn.focus();
+    });
+  }
+
+  function doEndDay(next) {
+    var cur = state.currentDate;
+    var list = tasksOf(cur);
+    var carried = [];
+    var kept = [];
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].done) kept.push(list[i]);
+      else carried.push(list[i]);
+    }
     var carriedIds = [];
     for (var j = 0; j < carried.length; j++) carriedIds.push(carried[j].id);
 
@@ -1204,7 +1437,7 @@
     state.days[next] = carried.concat(existing);
     state.currentDate = next;
     viewDate = next;
-    generateRecurring();
+    generateRecurring(cur);
     save();
     render();
   }
@@ -1264,11 +1497,16 @@
     document.getElementById("pastBanner").style.display = isCurrent ? "none" : "block";
     document.getElementById("addRow").style.display = isCurrent ? "flex" : "none";
     document.getElementById("pageFooter").style.display = isCurrent ? "block" : "none";
+    document.getElementById("topEndBar").style.display = isCurrent ? "flex" : "none";
+    var undoTop = document.getElementById("undoEndBtnTop");
+    undoTop.disabled = !state.undoEndDay;
+    undoTop.className = "undo-end-btn" + (state.undoEndDay ? "" : " is-disabled");
+    undoTop.title = state.undoEndDay ? "「本日終了」を取り消して " + state.undoEndDay.prevDate + " に戻す" : "「本日終了」の取り消し（終了後に使えます）";
     var undoBtn = document.getElementById("undoEndBtn");
     if (state.undoEndDay) {
       undoBtn.disabled = false;
       undoBtn.className = "undo-end-btn";
-      undoBtn.textContent = "↩ 「本日終了」を取り消して前日に戻す";
+      undoBtn.textContent = "↩ 「本日終了」を取り消して " + state.undoEndDay.prevDate + " に戻す";
     } else {
       undoBtn.disabled = true;
       undoBtn.className = "undo-end-btn is-disabled";
@@ -2258,6 +2496,8 @@
 
   document.getElementById("endDayBtn").addEventListener("click", endDay);
   document.getElementById("undoEndBtn").addEventListener("click", undoEndDay);
+  document.getElementById("endDayBtnTop").addEventListener("click", endDay);
+  document.getElementById("undoEndBtnTop").addEventListener("click", undoEndDay);
 
   document.getElementById("prevBtn").addEventListener("click", function () {
     if (viewDate > earliestDate()) { viewDate = addDays(viewDate, -1); render(); }
