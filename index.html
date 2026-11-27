@@ -657,6 +657,79 @@
   .an-scroll { max-height: 420px; overflow-y: auto; padding-right: 4px; }
   .an-tip { position: fixed; z-index: 200; pointer-events: none; background: #0d3b66; color: #fff; font-size: 12px; padding: 6px 9px; border-radius: 7px; box-shadow: 0 4px 14px rgba(0,0,0,0.2); white-space: pre-line; display: none; max-width: 280px; }
   .an-empty { padding: 26px; text-align: center; color: var(--gray-text); }
+  /* ================= カレンダー ================= */
+  .cal-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 6px 0 14px; }
+  .cal-bar .an-nav .today { width: auto; padding: 0 10px; font-size: 12px; }
+  .cal-legend { font-size: 11.5px; color: var(--gray-text); margin-left: auto; display: flex; gap: 12px; flex-wrap: wrap; }
+  .cal-legend b { font-weight: 700; }
+  .cal-head, .cal-month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .cal-head div { font-size: 12px; font-weight: 700; color: var(--gray-text); text-align: center; padding: 4px 0 6px; }
+  .cal-head .sat, .cal-day .num.sat { color: #1565c0; }
+  .cal-head .sun, .cal-day .num.off { color: #c62828; }
+  .cal-month { border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+  .cal-cell {
+    border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    min-height: 104px; padding: 4px 6px 6px; background: #fff; cursor: pointer; min-width: 0;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .cal-cell:hover { background: var(--blue-050); }
+  .cal-cell.other { background: #fafbfc; }
+  .cal-cell.other .num { opacity: 0.45; }
+  .cal-cell.today { box-shadow: inset 0 0 0 2px var(--blue-500); }
+  .cal-day { display: flex; align-items: baseline; gap: 4px; min-width: 0; }
+  .cal-day .num { font-weight: 700; font-size: 13px; color: var(--blue-900); }
+  .cal-day .hol { font-size: 10px; color: #c62828; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .cal-day .cnt { margin-left: auto; font-size: 10.5px; color: var(--gray-text); white-space: nowrap; }
+  .cal-memo { font-size: 11px; color: #5b4300; background: #fff6d8; border-radius: 4px; padding: 1px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cal-item { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #23313f; }
+  .cal-item.due::before { content: "● "; color: var(--blue-500); }
+  .cal-item.due.over { color: #c62828; }
+  .cal-item.due.over::before { color: #c62828; }
+  .cal-item.follow::before { content: "⏳ "; }
+  .cal-item.recur { color: var(--gray-text); }
+  .cal-item.recur::before { content: "🔁 "; }
+  .cal-item.done { color: var(--gray-text); text-decoration: line-through; }
+  .cal-item.done::before { content: "✔ "; text-decoration: none; display: inline-block; color: #2e7d32; }
+  .cal-item.urgent { font-weight: 700; }
+  .cal-more { font-size: 10.5px; color: var(--gray-text); }
+  /* 週表示：月〜日を左から右へ */
+  .cal-week-wrap { overflow-x: auto; padding-bottom: 4px; }
+  .cal-week { display: grid; grid-template-columns: repeat(7, minmax(140px, 1fr)); gap: 8px; min-width: 1000px; }
+  @media (min-width: 1100px) { .cal-week { min-width: 0; } }
+  .cal-col { border: 1px solid var(--line); border-radius: 10px; background: #fff; display: flex; flex-direction: column; min-width: 0; }
+  .cal-col.today { border-color: var(--blue-500); box-shadow: 0 0 0 1px var(--blue-500); }
+  .cal-col.past { background: #fcfdfe; }
+  .cal-col-head { padding: 8px 10px 6px; border-bottom: 1px solid var(--line); }
+  .cal-col-head .wd { font-size: 12px; color: var(--gray-text); font-weight: 700; }
+  .cal-col-head .d { font-size: 22px; font-weight: 700; color: var(--blue-900); line-height: 1.2; }
+  .cal-col-head.sat .wd, .cal-col-head.sat .d { color: #1565c0; }
+  .cal-col-head.off .wd, .cal-col-head.off .d { color: #c62828; }
+  .cal-col-head .hol { font-size: 11px; color: #c62828; }
+  .modal .cal-col textarea {
+    margin: 8px; padding: 6px 8px; min-height: 84px; resize: vertical; box-sizing: border-box; width: calc(100% - 16px);
+    border: 1px dashed #e3c76a; background: #fffbea; border-radius: 8px;
+    font-size: 12.5px; font-family: inherit; line-height: 1.5; color: #3d3100;
+  }
+  .modal .cal-col textarea:focus { outline: none; border-style: solid; border-color: #e0a100; background: #fff; }
+  .cal-sec { padding: 0 10px 8px; }
+  .cal-sec h5 { margin: 4px 0 3px; font-size: 11px; color: var(--gray-text); font-weight: 700; }
+  .cal-sec .cal-item { white-space: normal; font-size: 12px; line-height: 1.45; padding: 2px 0; word-break: break-word; }
+  .cal-none { font-size: 11.5px; color: #b4bfca; padding: 0 10px 10px; }
+  .cal-saved { font-size: 11px; color: var(--gray-text); min-height: 1em; }
+  /* ---- LINE WORKS予定 ---- */
+  .cal-item.ext { color: #0b6b3a; }
+  .cal-item.ext::before { content: "▍"; color: #06c755; font-weight: 700; }
+  .cal-item.ext .tm { color: #4b5b6b; font-variant-numeric: tabular-nums; margin-right: 3px; }
+  .ext-panel { border: 1px solid #bfe8cf; background: #f4fbf6; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+  .ext-panel h4 { margin: 0 0 4px; font-size: 14px; color: #0b6b3a; }
+  .ext-field { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12.5px; }
+  .ext-field span { flex: 0 0 140px; color: var(--blue-900); font-weight: 700; }
+  .ext-field input { flex: 1; min-width: 0; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; font-size: 12.5px; font-family: inherit; }
+  .ext-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .ext-actions .btn { flex: 0 0 auto; padding: 7px 12px; font-size: 13px; }
+  .ext-status { font-size: 12px; color: var(--gray-text); margin-top: 8px; }
+  .ext-status.err { color: #c62828; font-weight: 700; }
+  @media (max-width: 600px) { .ext-field { flex-direction: column; align-items: stretch; } .ext-field span { flex: none; } }
   .sort-wrap { font-size: 12px; color: var(--gray-text); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
   .sort-sel {
     font-size: 12px;
@@ -884,6 +957,38 @@
   .task .act { margin-left: auto; }
   .badge-wait, .badge-due { white-space: normal; }
   .task .meta { flex-wrap: wrap; }
+
+  /* 最優先はもう少し目立たせる（★を大きく・左に細い黄色の線・ごく薄い背景） */
+  .task.urgent:not(.done) { background: #fffbeb; box-shadow: inset 4px 0 0 #f5b700; }
+  .task.urgent .txt::before { content: "★"; font-size: 1.25em; margin-right: 4px; color: #f0a800; vertical-align: -1px; }
+  /* 期限切れは赤い札で日数を強調 */
+  .badge-due.overdue { background: #fde8e8; color: #c62828; padding: 2px 8px; border-radius: 999px; font-weight: 700; }
+  .badge-due.today { background: #fff4d6; color: #9a6200; padding: 2px 8px; border-radius: 999px; }
+
+  /* ---- 勤務場所 ---- */
+  .date-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .place-sel {
+    font-size: 12px; padding: 3px 6px; border-radius: 999px; font-family: inherit;
+    border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.18); color: #fff; cursor: pointer;
+  }
+  .place-sel option { color: #23313f; }
+  .place-row { display: flex; gap: 4px; padding: 8px 8px 0; flex-wrap: wrap; }
+  .place-btn {
+    flex: 1 1 0; min-width: 0; font-size: 11.5px; padding: 4px 0; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--line); background: #fff; color: var(--gray-text); font-family: inherit;
+  }
+  .place-btn:hover { border-color: var(--blue-500); }
+  .place-btn.on { color: #fff; font-weight: 700; border-color: transparent; }
+  .place-btn.on.p-0, .place-chip.p-0 { background: #8a94a0; }
+  .place-btn.on.p-1, .place-chip.p-1 { background: #1565c0; }
+  .place-btn.on.p-2, .place-chip.p-2 { background: #2e7d32; }
+  .place-btn.on.p-3, .place-chip.p-3 { background: #7b4fb0; }
+  .place-note { font-size: 11.5px; color: #5b3d8a; padding: 4px 10px 0; word-break: break-word; }
+  .place-chip { font-size: 10.5px; color: #fff; padding: 0 6px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70px; line-height: 1.6; }
+
+  .place-btn.on.auto { background: #fff; color: #5f6b77; border: 1px dashed #8a94a0; }
+  .place-chip.auto { background: #fff; color: #5f6b77; border: 1px dashed #8a94a0; line-height: 1.45; }
+  .place-note.auto { color: var(--gray-text); }
 </style>
 <script src="https://accounts.google.com/gsi/client" async></script>
 </head>
@@ -903,7 +1008,16 @@
           <div class="date-day" id="dateDay">--</div>
           <div class="date-meta">
             <div class="date-ym" id="dateYm">----年--月</div>
-            <div class="date-wd" id="dateWd">-曜日</div>
+            <div class="date-row">
+              <div class="date-wd" id="dateWd">-曜日</div>
+              <select id="placeSel" class="place-sel" title="この日の勤務場所">
+                <option value="">勤務場所：未設定</option>
+                <option value="休日">休日</option>
+                <option value="中野">中野</option>
+                <option value="三郷">三郷</option>
+                <option value="その他">その他</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="nav">
@@ -941,6 +1055,7 @@
             </select>
           </label>
           <button class="tool-btn" id="tagManageBtn" title="タグの追加・名前変更・色・削除">🏷 タグ管理</button>
+          <button class="tool-btn" id="calendarBtn" title="月・週（月〜日）のカレンダー。締切・フォロー日・完了と、日ごとのメモ">🗓 カレンダー</button>
           <button class="tool-btn" id="analyticsBtn" title="これまでの完了タスクを1か月・半年・1年で振り返る">📊 分析</button>
           <button class="tool-btn" id="recurBtn" title="毎日・毎週・毎月などに自動で出すタスク">🔁 繰り返し</button>
         </div>
@@ -962,9 +1077,12 @@
     <p class="hint">
       ✔ チェックした項目は完了として記録され、未チェックの項目だけが書いた順のまま翌日ページへ移ります。<br>
       ★ボタンで「最優先」の目印を付けると、タスクの頭に ★ が付き、どの並び順でも一番上に来ます。操作ボタン（📅⏳🏷★×）は、PCではタスクにマウスを乗せると表示されます。<br>
-      📅ボタンで締切日を設定・変更・削除できます（任意）。当日は黄色・超過は赤で目立ちます。<br>
+      📅ボタンで締切日を設定・変更・削除できます（任意）。締切の横に「あと○日」、当日は「今日まで」、過ぎると赤で「○日超過」と表示されます。<br>
       入力・編集中の改行は Enter または Shift+Enter、確定（完了）は Alt+Enter です。<br>
       新規タスクは「一番上」に追加されます。締切を設定したタスクは「期限が近い順」に自動で並びます（期限なしのタスクが上、期限ありがその下に期限の近い順）。<br>
+      「🗓 カレンダー」で、月表示と週表示（月〜日を左から右へ）を切り替えて、締切・フォロー日・繰り返し予定・完了したタスクを確認できます。週表示では日ごとにメモを書けます（自動保存）。<br>
+      日付の横の「勤務場所」と、カレンダーの週表示で、日ごとに「休日・中野・三郷・その他」を記録できます。週表示の「📋 LINE用にコピー」で、その週の勤務場所とメモをLINEに貼れる文章でコピーできます。<br>
+      カレンダーの「🔗 LINE WORKS」から、LINE WORKSカレンダーのiCal URLを登録すると、LINE WORKSの予定がこのカレンダー（週・月）にも表示されます（開くたびに30分おきに自動更新）。LINE WORKSに「休日・代休・有給・午前休」などの予定があれば、その日の勤務場所が自動で「休日」になります（手で選んだ場所が優先）。<br>
       「📊 分析」で、これまでに完了したタスクを1か月・半年・1年ごとに振り返れます（完了数・かかった日数・締切内の割合・分野別など。CSVで書き出しも可）。<br>
       並び順は上の「並び順」で選べます（締切日の近い順・遠い順／登録の古い順・新しい順／手動）。★を付けたタスクは常に一番上、締切日順では締切未設定のタスクがその次に来ます。☰ドラッグでの入れ替えは「手動」のときに使えます。<br>
       ⏳ボタンで「返事待ち・確認待ち・承認待ち・保留」を付けると、リスト下の「相手待ち」欄に移り、毎日そのまま繰り越されます。相手やフォロー日もメモでき、フォロー日が来るとオレンジで知らせます。戻ってきたら⏳→「戻ってきた」で一番上に戻ります。<br>
@@ -972,7 +1090,7 @@
       「🔁 繰り返し」で、毎日・平日・毎週○曜・毎月○日（月末も可）に自動で出るタスクを登録できます。前回分が未完了のまま残っている場合は重複して出しません。<br>
       「本日終了」（上部・下部どちらのボタンでも可）を押すと、次のページの日付を「翌日」「次の営業日（土日・祝日を飛ばす）」「日付を指定」から選べます。連休や出張で数日空くときに使ってください。<br>
       「本日終了」を押し間違えたら、「取り消し」ボタン（終了後に黄色く押せるようになります）で前日に戻せます（翌日に追加・変更した分は残ります）。<br>
-      <span class="ver">ver 2026-11-27e（保留の縦表示を修正）</span><br>
+      <span class="ver">ver 2026-11-27j（LINE WORKSの休日を勤務場所に反映）</span><br>
       Googleでログインすると、各自のGoogleドライブに保存され、PC・携帯のどの端末でも同じ内容が表示されます（3人それぞれのアカウントで各自のタスクのみ表示）。
     </p>
   </div>
@@ -1109,13 +1227,15 @@
   }
 
   function emptyState() {
-    return { currentDate: todayStr(), days: {}, tags: [], recurring: [] };
+    return { currentDate: todayStr(), days: {}, tags: [], recurring: [], memos: {}, places: {} };
   }
 
   // 旧バージョンのデータにも tags / recurring を補う
   function ensureShape(s) {
     if (!Array.isArray(s.tags)) s.tags = [];
     if (!Array.isArray(s.recurring)) s.recurring = [];
+    if (!s.memos || typeof s.memos !== "object") s.memos = {};
+    if (!s.places || typeof s.places !== "object") s.places = {};
     return s;
   }
 
@@ -1705,6 +1825,11 @@
     document.getElementById("dateYm").textContent =
       d.getFullYear() + "年 " + (d.getMonth() + 1) + "月";
     document.getElementById("dateWd").textContent = WD[d.getDay()] + "曜日";
+    var ps = document.getElementById("placeSel");
+    var pl = placeOf(viewDate);
+    ps.value = pl.p || "";
+    ps.title = "この日の勤務場所" + (pl.note ? "（" + pl.note + "）" : "") + (pl.auto ? "：LINE WORKSの予定から自動" : "");
+    ps.disabled = false;
 
     document.getElementById("pastBanner").style.display = isCurrent ? "none" : "block";
     document.getElementById("addRow").style.display = isCurrent ? "flex" : "none";
@@ -1826,6 +1951,503 @@
     });
     var rb = document.getElementById("recurBtn");
     rb.textContent = "🔁 繰り返し" + (state.recurring.length ? "（" + state.recurring.length + "）" : "");
+  }
+
+  /* ================= LINE WORKS カレンダー（iCal）の取り込み ================= */
+  // state.ext = { icalUrl, proxyUrl, fetchedAt, events: [{d, s, e, allDay, title, loc}] }
+  function extConf() { if (!state.ext) state.ext = { icalUrl: "", proxyUrl: "", fetchedAt: 0, events: [] }; return state.ext; }
+  function extEventsOn(d) {
+    var ev = (state.ext && state.ext.events) || [];
+    return ev.filter(function (x) { return x.d === d; }).sort(function (a, b) {
+      if (a.allDay !== b.allDay) return a.allDay ? -1 : 1;
+      return (a.s || "") < (b.s || "") ? -1 : 1;
+    });
+  }
+
+  // ---- iCalendar（.ics）の読み取り ----
+  function icsUnfold(text) {
+    return String(text).replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n[ \t]/g, "").split("\n");
+  }
+  function icsUnescape(v) { return String(v || "").replace(/\\n/gi, "\n").replace(/\\([,;\\])/g, "$1"); }
+  function icsParseLine(line) {
+    var i = line.indexOf(":");
+    if (i < 0) return null;
+    var head = line.slice(0, i), value = line.slice(i + 1);
+    var parts = head.split(";"), params = {};
+    for (var k = 1; k < parts.length; k++) {
+      var p = parts[k].split("=");
+      params[p[0].toUpperCase()] = (p[1] || "").replace(/"/g, "");
+    }
+    return { name: parts[0].toUpperCase(), params: params, value: value };
+  }
+  // 日時を { d: "YYYY-MM-DD", t: "HH:MM" | "", allDay } に（UTCはこの端末の時刻に変換）
+  function icsTime(prop) {
+    if (!prop) return null;
+    var v = prop.value.trim();
+    var m = /^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?$/.exec(v);
+    if (!m) return null;
+    if (!m[4] || prop.params.VALUE === "DATE") return { d: m[1] + "-" + m[2] + "-" + m[3], t: "", allDay: true };
+    if (m[7]) {
+      var dt = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)));
+      return { d: dt.getFullYear() + "-" + pad(dt.getMonth() + 1) + "-" + pad(dt.getDate()), t: pad(dt.getHours()) + ":" + pad(dt.getMinutes()), allDay: false };
+    }
+    return { d: m[1] + "-" + m[2] + "-" + m[3], t: m[4] + ":" + m[5], allDay: false };
+  }
+  function icsParse(text) {
+    var lines = icsUnfold(text), list = [], cur = null;
+    lines.forEach(function (ln) {
+      if (/^BEGIN:VEVENT/i.test(ln)) { cur = { exdates: {} }; return; }
+      if (/^END:VEVENT/i.test(ln)) { if (cur) list.push(cur); cur = null; return; }
+      if (!cur) return;
+      var p = icsParseLine(ln);
+      if (!p) return;
+      if (p.name === "SUMMARY") cur.title = icsUnescape(p.value);
+      else if (p.name === "LOCATION") cur.loc = icsUnescape(p.value);
+      else if (p.name === "DTSTART") cur.start = icsTime(p);
+      else if (p.name === "DTEND") cur.end = icsTime(p);
+      else if (p.name === "UID") cur.uid = p.value;
+      else if (p.name === "RRULE") cur.rrule = p.value;
+      else if (p.name === "STATUS") cur.status = p.value.toUpperCase();
+      else if (p.name === "RECURRENCE-ID") cur.recurId = icsTime(p);
+      else if (p.name === "EXDATE") {
+        p.value.split(",").forEach(function (v) {
+          var t = icsTime({ value: v, params: p.params });
+          if (t) cur.exdates[t.d] = true;
+        });
+      }
+    });
+    return list.filter(function (e) { return e.start && e.status !== "CANCELLED"; });
+  }
+  var ICS_DAY = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
+  function icsMonthsBetween(a, b) { var x = parseDate(a), y = parseDate(b); return (y.getFullYear() - x.getFullYear()) * 12 + y.getMonth() - x.getMonth(); }
+  function icsRuleHit(r, start, d) {
+    var dt = parseDate(d), sd = parseDate(start), iv = r.INTERVAL ? +r.INTERVAL : 1;
+    var byday = r.BYDAY ? r.BYDAY.split(",") : null;
+    if (r.FREQ === "DAILY") return daysBetween(start, d) % iv === 0 && (!byday || byday.some(function (b) { return ICS_DAY[b.slice(-2)] === dt.getDay(); }));
+    if (r.FREQ === "WEEKLY") {
+      var wk = Math.floor(daysBetween(calMonday(start), calMonday(d)) / 7);
+      if (wk % iv !== 0) return false;
+      if (byday) return byday.some(function (b) { return ICS_DAY[b.slice(-2)] === dt.getDay(); });
+      return dt.getDay() === sd.getDay();
+    }
+    if (r.FREQ === "MONTHLY") {
+      if (icsMonthsBetween(start, d) % iv !== 0) return false;
+      if (r.BYMONTHDAY) {
+        var last = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+        return r.BYMONTHDAY.split(",").some(function (x) { x = +x; return x > 0 ? dt.getDate() === x : dt.getDate() === last + x + 1; });
+      }
+      if (byday) {
+        return byday.some(function (b) {
+          var mm = /^([+-]?\d+)?([A-Z]{2})$/.exec(b);
+          if (!mm || ICS_DAY[mm[2]] !== dt.getDay()) return false;
+          var n = mm[1] ? +mm[1] : (r.BYSETPOS ? +r.BYSETPOS : 0);
+          if (!n) return true;
+          var nth = Math.floor((dt.getDate() - 1) / 7) + 1;
+          var lastD = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+          var nthFromEnd = -(Math.floor((lastD - dt.getDate()) / 7) + 1);
+          return n > 0 ? nth === n : nthFromEnd === n;
+        });
+      }
+      return dt.getDate() === sd.getDate();
+    }
+    if (r.FREQ === "YEARLY") {
+      return (dt.getFullYear() - sd.getFullYear()) % iv === 0 && dt.getMonth() === sd.getMonth() && dt.getDate() === sd.getDate();
+    }
+    return false;
+  }
+  // 予定を日ごとに展開（繰り返し・複数日にまたがる予定も）
+  function icsExpand(list) {
+    var from = addDays(todayStr(), -120), to = addDays(todayStr(), 240), out = [];
+    var overridden = {};
+    list.forEach(function (e) { if (e.recurId && e.uid) (overridden[e.uid] = overridden[e.uid] || {})[e.recurId.d] = true; });
+    function add(e, d) {
+      var span = 0;
+      if (e.end) {
+        span = daysBetween(e.start.d, e.end.d);
+        if (e.start.allDay) span -= 1; // 終日の終了日は「翌日」で書かれるため
+        if (span < 0) span = 0;
+        if (span > 60) span = 60;
+      }
+      for (var k = 0; k <= span; k++) {
+        var day = addDays(d, k);
+        if (day < from || day > to) continue;
+        out.push({
+          d: day, allDay: e.start.allDay || span > 0 && k > 0 && k < span,
+          s: e.start.allDay ? "" : (k === 0 ? e.start.t : ""), e: e.end && !e.end.allDay && k === span ? e.end.t : "",
+          title: e.title || "（件名なし）", loc: e.loc || "", multi: span > 0
+        });
+      }
+    }
+    list.forEach(function (e) {
+      if (!e.rrule) { add(e, e.start.d); return; }
+      var r = {};
+      e.rrule.split(";").forEach(function (kv) { var a = kv.split("="); r[a[0].toUpperCase()] = (a[1] || "").toUpperCase(); });
+      var until = r.UNTIL ? (icsTime({ value: r.UNTIL, params: {} }) || {}).d : "";
+      var count = r.COUNT ? +r.COUNT : 0, n = 0, skip = (e.uid && overridden[e.uid]) || {};
+      var end = until && until < to ? until : to;
+      for (var d = e.start.d, guard = 0; d <= end && guard < 4000; d = addDays(d, 1), guard++) {
+        if (!icsRuleHit(r, e.start.d, d)) continue;
+        n++;
+        if (count && n > count) break;
+        if (e.exdates[d] || skip[d]) continue;
+        add(e, d);
+      }
+    });
+    return out;
+  }
+  function extStore(text, sourceLabel) {
+    var list = icsParse(text);
+    if (!list.length && !/BEGIN:VCALENDAR/i.test(text)) throw new Error("iCalendar形式のデータではありませんでした。URLをご確認ください。");
+    var c = extConf();
+    c.events = icsExpand(list);
+    c.fetchedAt = Date.now();
+    c.source = sourceLabel || "";
+    save();
+    return c.events.length;
+  }
+  var extLoading = false;
+  function extFetch(force) {
+    var c = extConf();
+    if (!c.icalUrl || extLoading) return Promise.resolve(null);
+    if (!force && Date.now() - (c.fetchedAt || 0) < 30 * 60 * 1000) return Promise.resolve(null);
+    extLoading = true;
+    var url = c.proxyUrl ? c.proxyUrl + (c.proxyUrl.indexOf("?") >= 0 ? "&" : "?") + "url=" + encodeURIComponent(c.icalUrl) : c.icalUrl;
+    return fetch(url, { cache: "no-store" }).then(function (res) {
+      if (!res.ok) throw new Error("読み込みに失敗しました（" + res.status + "）");
+      return res.text();
+    }).then(function (text) {
+      extLoading = false;
+      if (/^ERROR:/.test(text)) throw new Error(text.replace(/^ERROR:\s*/, ""));
+      return extStore(text, "URL");
+    }, function (err) {
+      extLoading = false;
+      if (err && /Failed to fetch|NetworkError|Load failed/i.test(String(err.message))) {
+        throw new Error("ブラウザから直接読み込めませんでした（LINE WORKS側が外部サイトからの読み込みを許可していないため）。下の「中継URL」を設定してください。");
+      }
+      throw err;
+    });
+  }
+
+  // ---- 連携の設定パネル ----
+  function extPanel(onChange) {
+    var c = extConf();
+    var box = el("div", "ext-panel");
+    box.appendChild(el("h4", null, "🔗 LINE WORKSカレンダーの予定を表示"));
+    var help = el("div", "muted");
+    help.innerHTML = "LINE WORKSのカレンダー設定で発行した <b>iCal URL</b> を貼り付けてください（ブラウザ版：カレンダー名の ⚙ →［カレンダー設定］→ 外部への共有 → iCal URL）。"
+      + "<br>※ iCal URLの発行は管理者が「外部への共有」を許可している場合のみ表示されます。URLは他の人に教えないでください。";
+    box.appendChild(help);
+    function field(label, ph, val) {
+      var w = el("label", "ext-field");
+      w.appendChild(el("span", null, label));
+      var i = document.createElement("input");
+      i.type = "url"; i.placeholder = ph; i.value = val || "";
+      w.appendChild(i);
+      box.appendChild(w);
+      return i;
+    }
+    var ical = field("iCal URL", "https://…（LINE WORKSで発行したiCal URL）", c.icalUrl);
+    var proxy = field("中継URL（必要な場合）", "https://script.google.com/macros/s/…/exec", c.proxyUrl);
+    var st = el("div", "ext-status");
+    function status(msg, err) {
+      st.className = "ext-status" + (err ? " err" : "");
+      st.textContent = msg || (c.fetchedAt ? "最終取り込み：" + new Date(c.fetchedAt).toLocaleString("ja-JP") + "　予定 " + (c.events || []).length + "件（前後数か月分）" : "まだ取り込んでいません");
+    }
+    var row = el("div", "ext-actions");
+    var load = el("button", "btn", "保存して読み込む");
+    load.addEventListener("click", function () {
+      c.icalUrl = ical.value.trim(); c.proxyUrl = proxy.value.trim(); save();
+      if (!c.icalUrl) { status("iCal URLを入力してください。", true); return; }
+      status("読み込み中…");
+      extFetch(true).then(function () { status(); onChange(); }, function (e) { status(e.message, true); });
+    });
+    var file = document.createElement("input");
+    file.type = "file"; file.accept = ".ics,text/calendar"; file.style.display = "none";
+    file.addEventListener("change", function () {
+      var f = file.files[0];
+      if (!f) return;
+      f.text().then(function (t) {
+        try { extStore(t, "ファイル"); status(); onChange(); } catch (e) { status(e.message, true); }
+        file.value = "";
+      });
+    });
+    var fbtn = el("button", "btn sub", ".icsファイルを読み込む");
+    fbtn.title = "LINE WORKSの［インポート/エクスポート］で書き出したファイルを読み込みます（URLが使えない場合）";
+    fbtn.addEventListener("click", function () { file.click(); });
+    var clear = el("button", "btn sub", "連携を解除");
+    clear.addEventListener("click", function () {
+      if (!window.confirm("LINE WORKSの予定の表示をやめ、設定を消しますか？")) return;
+      state.ext = { icalUrl: "", proxyUrl: "", fetchedAt: 0, events: [] };
+      ical.value = ""; proxy.value = ""; save(); status(); onChange();
+    });
+    row.appendChild(load); row.appendChild(fbtn); row.appendChild(clear); row.appendChild(file);
+    box.appendChild(row);
+    box.appendChild(st);
+    status();
+    return box;
+  }
+
+  /* ---- 勤務場所（休日・中野・三郷・その他） ---- */
+  var PLACES = ["休日", "中野", "三郷", "その他"];
+  // LINE WORKSの予定のうち「休み」を表すもの（休日・代休・有給・午前休など）
+  var EXT_OFF_RE = /(休日|休み|有給|有休|代休|振休|振替休|公休|全休|午前休|午後休|半休|休暇)/;
+  function extOffOn(d) {
+    var ev = (state.ext && state.ext.events) || [];
+    for (var i = 0; i < ev.length; i++) if (ev[i].d === d && EXT_OFF_RE.test(ev[i].title)) return ev[i];
+    return null;
+  }
+  // 手入力が優先。なければLINE WORKSの「休日」系の予定から自動で「休日」
+  function placeOf(d) {
+    var manual = state.places && state.places[d];
+    if (manual && manual.p) return manual;
+    var off = extOffOn(d);
+    if (off) return { p: "休日", note: off.title.trim() === "休日" ? "" : off.title.trim(), auto: true };
+    return {};
+  }
+  function setPlace(d, p, note) {
+    if (!state.places) state.places = {};
+    if (!p) delete state.places[d];
+    else state.places[d] = { p: p, note: p === "その他" ? (note || "") : "" };
+    save();
+  }
+  function placeLabel(d) {
+    var pl = placeOf(d);
+    if (!pl.p) return "";
+    if (pl.auto) return pl.note || "休日";
+    return pl.p === "その他" && pl.note ? pl.note : pl.p;
+  }
+  function placeChip(d) {
+    var pl = placeOf(d);
+    if (!pl.p) return null;
+    var c = el("span", "place-chip p-" + PLACES.indexOf(pl.p), placeLabel(d));
+    c.title = "勤務場所：" + pl.p + (pl.note ? "（" + pl.note + "）" : "") + (pl.auto ? "\nLINE WORKSの予定から自動" : "");
+    if (pl.auto) c.className += " auto";
+    return c;
+  }
+
+  /* ================= カレンダー（月・週）とメモ ================= */
+  var calState = { mode: "w", date: "" }; // w: 週（月〜日） / m: 月
+  var CAL_WD = ["月", "火", "水", "木", "金", "土", "日"];
+
+  function calMonday(ds) { var w = parseDate(ds).getDay(); return addDays(ds, -((w + 6) % 7)); }
+  function calIndex() {
+    var idx = { due: {}, follow: {}, done: {} };
+    function push(map, d, t) { (map[d] = map[d] || []).push(t); }
+    tasksOf(state.currentDate).forEach(function (t) {
+      if (t.done) return;
+      if (t.deadline) push(idx.due, t.deadline, t);
+      if (t.wait && t.wait.followUp) push(idx.follow, t.wait.followUp, t);
+    });
+    Object.keys(state.days || {}).forEach(function (d) {
+      (state.days[d] || []).forEach(function (t) { if (t.done) push(idx.done, d, t); });
+    });
+    Object.keys(idx.due).forEach(function (d) {
+      idx.due[d].sort(function (a, b) { return (b.urgent ? 1 : 0) - (a.urgent ? 1 : 0); });
+    });
+    return idx;
+  }
+  function calRecur(d) {
+    if (d <= state.currentDate) return [];
+    return (state.recurring || []).filter(function (r) { return !r.paused && ruleMatches(r, d); });
+  }
+  function calMemo(d) { return (state.memos && state.memos[d]) || ""; }
+  var calSaveTimer = null;
+  function calSetMemo(d, v) {
+    if (!state.memos) state.memos = {};
+    if (v.trim()) state.memos[d] = v; else delete state.memos[d];
+    clearTimeout(calSaveTimer);
+    calSaveTimer = setTimeout(save, 600);
+  }
+  function calItem(cls, text, title) {
+    var e = el("div", "cal-item " + cls, text);
+    e.title = title || text;
+    return e;
+  }
+
+  function calExtItem(x, compact) {
+    var e = el("div", "cal-item ext");
+    var tm = x.allDay ? (x.multi ? "連日" : "終日") : (x.s ? x.s + (x.e && !compact ? "〜" + x.e : "") : (x.e ? "〜" + x.e : ""));
+    if (tm) e.appendChild(el("span", "tm", tm));
+    e.appendChild(document.createTextNode(x.title + (x.loc && !compact ? "（" + x.loc + "）" : "")));
+    e.title = (tm ? tm + " " : "") + x.title + (x.loc ? "\n場所：" + x.loc : "") + "\n（LINE WORKS）";
+    return e;
+  }
+
+  function openCalendar() {
+    calState.date = todayStr();
+    openModal("🗓 カレンダー", function (c) {
+      c.parentNode.classList.add("modal-wide");
+      var bar = el("div", "cal-bar");
+      var tabs = el("div", "an-tabs");
+      [["w", "週（月〜日）"], ["m", "月"]].forEach(function (p) {
+        var b = el("button", null, p[1]);
+        b.dataset.mode = p[0];
+        b.addEventListener("click", function () { calState.mode = p[0]; draw(); });
+        tabs.appendChild(b);
+      });
+      var nav = el("div", "an-nav");
+      var prev = el("button", null, "‹"), next = el("button", null, "›"), tdy = el("button", "today", "今日"), rl = el("div", "an-range");
+      prev.addEventListener("click", function () { move(-1); });
+      next.addEventListener("click", function () { move(1); });
+      tdy.addEventListener("click", function () { calState.date = todayStr(); draw(); });
+      nav.appendChild(prev); nav.appendChild(rl); nav.appendChild(next); nav.appendChild(tdy);
+      var lg = el("div", "cal-legend");
+      lg.innerHTML = "<span><b style='color:#1e88e5'>●</b> 締切</span><span>⏳ フォロー日</span><span>✔ 完了</span><span>🔁 繰り返し予定</span><span><b style='color:#9a7400'>■</b> メモ</span><span><b style='color:#06c755'>▍</b> LINE WORKS</span>";
+      var copyBtn = el("button", "tool-btn", "📋 LINE用にコピー");
+      copyBtn.title = "表示中の週（月〜日）の勤務場所とメモを、LINEに貼り付けられる文章でコピー";
+      copyBtn.addEventListener("click", function () {
+        var mon = calMonday(calState.date), lines = [];
+        lines.push("【" + formatDue(mon) + "〜" + formatDue(addDays(mon, 6)) + " 勤務予定】");
+        for (var i = 0; i < 7; i++) {
+          var d = addDays(mon, i), memo = calMemo(d).split("\n")[0].trim();
+          lines.push(formatDue(d) + " " + (placeLabel(d) || "未定") + (memo ? "　" + memo : ""));
+        }
+        var text = lines.join("\n");
+        var done = function () { copyBtn.textContent = "✔ コピーしました"; setTimeout(function () { copyBtn.textContent = "📋 LINE用にコピー"; }, 1600); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () { fallback(); });
+        } else fallback();
+        function fallback() {
+          var t = document.createElement("textarea");
+          t.value = text; document.body.appendChild(t); t.select();
+          try { document.execCommand("copy"); done(); } catch (e) { window.prompt("コピーしてください", text); }
+          t.remove();
+        }
+      });
+      var lwBtn = el("button", "tool-btn", "🔗 LINE WORKS");
+      lwBtn.title = "LINE WORKSカレンダーの予定をこのカレンダーに表示する設定";
+      bar.appendChild(tabs); bar.appendChild(nav); bar.appendChild(copyBtn); bar.appendChild(lwBtn); bar.appendChild(lg);
+      c.appendChild(bar);
+      var panelHolder = el("div");
+      c.appendChild(panelHolder);
+      lwBtn.addEventListener("click", function () {
+        if (panelHolder.firstChild) { panelHolder.innerHTML = ""; return; }
+        panelHolder.appendChild(extPanel(function () { draw(); }));
+      });
+      if (!extConf().icalUrl && !(extConf().events || []).length) lwBtn.textContent = "🔗 LINE WORKSと連携";
+      var body = el("div");
+      c.appendChild(body);
+      extFetch(false).then(function (n) { if (n !== null) draw(); }, function () { /* 失敗時は前回分を表示 */ });
+
+      function move(k) {
+        if (calState.mode === "w") calState.date = addDays(calState.date, 7 * k);
+        else { var d = parseDate(calState.date); var n = new Date(d.getFullYear(), d.getMonth() + k, 1); calState.date = n.getFullYear() + "-" + pad(n.getMonth() + 1) + "-01"; }
+        draw();
+      }
+
+      function draw() {
+        if (calSaveTimer) { clearTimeout(calSaveTimer); calSaveTimer = null; save(); }
+        Array.prototype.forEach.call(tabs.children, function (b) { b.className = b.dataset.mode === calState.mode ? "on" : ""; });
+        copyBtn.style.display = calState.mode === "w" ? "" : "none";
+        body.innerHTML = "";
+        var idx = calIndex(), today = todayStr();
+        if (calState.mode === "w") drawWeek(idx, today); else drawMonth(idx, today);
+      }
+
+      function drawWeek(idx, today) {
+        var mon = calMonday(calState.date), sun = addDays(mon, 6);
+        var a = parseDate(mon), b = parseDate(sun);
+        rl.textContent = a.getFullYear() + "年 " + (a.getMonth() + 1) + "/" + a.getDate() + "（月）〜 " + (b.getMonth() + 1) + "/" + b.getDate() + "（日）";
+        var wrap = el("div", "cal-week-wrap"), grid = el("div", "cal-week");
+        wrap.appendChild(grid); body.appendChild(wrap);
+        for (var i = 0; i < 7; i++) (function (d, i) {
+          var col = el("div", "cal-col" + (d === today ? " today" : d < today ? " past" : ""));
+          var hn = holidayName(d), dt = parseDate(d);
+          var head = el("div", "cal-col-head" + (hn || i === 6 ? " off" : i === 5 ? " sat" : ""));
+          head.appendChild(el("div", "wd", CAL_WD[i] + "曜日" + (d === today ? "・今日" : "")));
+          head.appendChild(el("div", "d", (dt.getMonth() + 1) + "/" + dt.getDate()));
+          if (hn) head.appendChild(el("div", "hol", hn));
+          col.appendChild(head);
+
+          // 勤務場所
+          var prow = el("div", "place-row");
+          var cur = placeOf(d);
+          PLACES.forEach(function (p, k) {
+            var b = el("button", "place-btn p-" + k + (cur.p === p ? " on" : "") + (cur.p === p && cur.auto ? " auto" : ""), p);
+            if (cur.p === p && cur.auto) b.title = "LINE WORKSの予定（" + (cur.note || "休日") + "）から自動。押すと手入力で確定します";
+            b.addEventListener("click", function () {
+              if (cur.p === p && cur.auto) { setPlace(d, p, ""); }
+              else if (cur.p === p) { setPlace(d, "", ""); }
+              else if (p === "その他") {
+                var nt = (window.prompt("場所を入力してください（例：現場名・在宅など）", cur.note || "") || "").trim();
+                setPlace(d, p, nt);
+              } else setPlace(d, p, "");
+              draw(); render();
+            });
+            prow.appendChild(b);
+          });
+          col.appendChild(prow);
+          if (cur.p === "その他" && cur.note) col.appendChild(el("div", "place-note", "📍 " + cur.note));
+          if (cur.auto) col.appendChild(el("div", "place-note auto", "LINE WORKSより：" + (cur.note || "休日")));
+
+          var ta = document.createElement("textarea");
+          ta.placeholder = "メモ（予定・メモなど）";
+          ta.value = calMemo(d);
+          ta.addEventListener("input", function () { calSetMemo(d, ta.value); });
+          ta.addEventListener("blur", function () { if (calSaveTimer) { clearTimeout(calSaveTimer); calSaveTimer = null; save(); } });
+          col.appendChild(ta);
+
+          var any = false;
+          function sec(title, items) {
+            if (!items.length) return;
+            any = true;
+            var s = el("div", "cal-sec");
+            s.appendChild(el("h5", null, title));
+            items.forEach(function (x) { s.appendChild(x); });
+            col.appendChild(s);
+          }
+          sec("LINE WORKSの予定", extEventsOn(d).filter(function (x) { return !EXT_OFF_RE.test(x.title); }).map(function (x) { return calExtItem(x, false); }));
+          sec("締切", (idx.due[d] || []).map(function (t) {
+            return calItem("due" + (d < state.currentDate ? " over" : "") + (t.urgent ? " urgent" : ""), (t.urgent ? "★ " : "") + t.text);
+          }));
+          sec("フォロー日", (idx.follow[d] || []).map(function (t) { return calItem("follow", t.text + "（" + t.wait.type + "）"); }));
+          sec("繰り返し予定", calRecur(d).map(function (r) { return calItem("recur", r.text); }));
+          sec("完了 " + ((idx.done[d] || []).length) + "件", (idx.done[d] || []).map(function (t) { return calItem("done", t.text); }));
+          if (!any) col.appendChild(el("div", "cal-none", "予定・記録なし"));
+          grid.appendChild(col);
+        })(addDays(mon, i), i);
+      }
+
+      function drawMonth(idx, today) {
+        var d0 = parseDate(calState.date), y = d0.getFullYear(), m = d0.getMonth();
+        rl.textContent = y + "年 " + (m + 1) + "月";
+        var head = el("div", "cal-head");
+        CAL_WD.forEach(function (w, i) { head.appendChild(el("div", i === 5 ? "sat" : i === 6 ? "sun" : "", w)); });
+        body.appendChild(head);
+        var grid = el("div", "cal-month");
+        body.appendChild(grid);
+        var first = y + "-" + pad(m + 1) + "-01";
+        var start = calMonday(first);
+        var lastD = new Date(y, m + 1, 0).getDate();
+        var end = addDays(calMonday(y + "-" + pad(m + 1) + "-" + pad(lastD)), 6);
+        for (var d = start, i = 0; d <= end; d = addDays(d, 1), i++) (function (d, i) {
+          var dt = parseDate(d), wi = i % 7, hn = holidayName(d);
+          var cell = el("div", "cal-cell" + (dt.getMonth() !== m ? " other" : "") + (d === today ? " today" : ""));
+          var top = el("div", "cal-day");
+          top.appendChild(el("span", "num" + (hn || wi === 6 ? " off" : wi === 5 ? " sat" : ""), String(dt.getDate())));
+          if (hn) top.appendChild(el("span", "hol", hn));
+          var pc = placeChip(d);
+          if (pc) top.appendChild(pc);
+          var dn = (idx.done[d] || []).length;
+          if (dn) top.appendChild(el("span", "cnt", "✔" + dn));
+          cell.appendChild(top);
+          var memo = calMemo(d);
+          if (memo) { var mm = el("div", "cal-memo", memo.split("\n")[0]); mm.title = memo; cell.appendChild(mm); }
+          var items = extEventsOn(d).filter(function (x) { return !EXT_OFF_RE.test(x.title); }).map(function (x) { return calExtItem(x, true); });
+          (idx.due[d] || []).forEach(function (t) { items.push(calItem("due" + (d < state.currentDate ? " over" : "") + (t.urgent ? " urgent" : ""), (t.urgent ? "★" : "") + t.text.split("\n")[0], t.text)); });
+          (idx.follow[d] || []).forEach(function (t) { items.push(calItem("follow", t.text.split("\n")[0], t.text)); });
+          calRecur(d).forEach(function (r) { items.push(calItem("recur", r.text)); });
+          var max = memo ? 3 : 4;
+          items.slice(0, max).forEach(function (x) { cell.appendChild(x); });
+          if (items.length > max) cell.appendChild(el("div", "cal-more", "他 " + (items.length - max) + "件"));
+          cell.title = labelDate(d) + "：クリックでこの週を表示（メモもここから）";
+          cell.addEventListener("click", function () { calState.mode = "w"; calState.date = d; draw(); });
+          grid.appendChild(cell);
+        })(d, i);
+      }
+
+      draw();
+    });
   }
 
   /* ================= 分析（作業の記録） ================= */
@@ -2384,7 +3006,14 @@
         else if (t.deadline === state.currentDate) cls += " today";
       }
       dueB.className = cls;
-      dueB.textContent = (t.deadline < state.currentDate && !t.done ? "期限切れ " : "締切 ") + formatDue(t.deadline);
+      if (!t.done && t.deadline < state.currentDate) {
+        dueB.textContent = "⚠ " + daysBetween(t.deadline, state.currentDate) + "日超過（" + formatDue(t.deadline) + "）";
+      } else if (!t.done && t.deadline === state.currentDate) {
+        dueB.textContent = "今日まで";
+      } else {
+        dueB.textContent = "締切 " + formatDue(t.deadline)
+          + (!t.done ? "（あと" + daysBetween(state.currentDate, t.deadline) + "日）" : "");
+      }
       // 相手待ち（右の細い列）では本文の下に出して、本文の幅を確保する
       if (isWaiting(t)) meta.insertBefore(dueB, meta.firstChild);
       else li.appendChild(dueB);
@@ -2867,6 +3496,13 @@
   document.getElementById("tagManageBtn").addEventListener("click", openTagManager);
   document.getElementById("recurBtn").addEventListener("click", function () { openRecurManager(); });
   document.getElementById("analyticsBtn").addEventListener("click", openAnalytics);
+  document.getElementById("calendarBtn").addEventListener("click", openCalendar);
+  document.getElementById("placeSel").addEventListener("change", function (e) {
+    var v = e.target.value, note = "";
+    if (v === "その他") note = (window.prompt("場所を入力してください（例：現場名・在宅など）", placeOf(viewDate).note || "") || "").trim();
+    setPlace(viewDate, v, note);
+    render();
+  });
   (function () {
     var sel = document.getElementById("sortSel");
     sel.value = sortMode;
