@@ -1199,6 +1199,98 @@
   .nav button:hover:not(:disabled) { background: rgba(255,255,255,0.18); }
   .nav button:disabled { opacity: 1; color: rgba(255,255,255,0.7); background: transparent; cursor: default; }
   .nav button:not(:disabled) { color: #fff !important; opacity: 1 !important; }
+
+  /* ================= 強調色をテーマに連動（黄色・オレンジを廃止） ================= */
+  .task.urgent:not(.done),
+  .col-wait .task.urgent:not(.done),
+  .task.expanded.urgent:not(.done) { background: var(--urgent-bg, #f3f8fe); box-shadow: inset 3px 0 0 var(--urgent, var(--blue-700)); }
+  .task.urgent .txt::before { background: var(--urgent, var(--blue-700)); }
+  .icon-btn.mark-on, .add-row .urgent-toggle.on, .add-row .urgent-toggle:hover { color: var(--urgent, var(--blue-700)); border-color: var(--urgent, var(--blue-700)); }
+  .add-row .urgent-toggle.on { background: var(--urgent-bg, #f3f8fe); }
+  .badge-due.today { background: var(--attn-bg, #e3f0fc); color: var(--attn, var(--blue-700)); font-weight: 700; }
+  .badge-due.overdue { background: #fdecec; color: #b3261e; }
+  .badge-wait.follow,
+  .wait-info .wi-days.long,
+  .wait-info .wi-due.today,
+  .wait-info.follow .wi-follow { color: var(--attn, var(--blue-700)); font-weight: 700; }
+  .wait-info .wi-due.over { color: #b3261e; }
+  .cal-item.follow::before { color: var(--attn, var(--blue-700)); }
+  .cal-memo { background: var(--attn-bg, #e3f0fc); color: var(--blue-900); }
+  .modal .cal-col textarea { background: var(--blue-050); border: 1px dashed var(--line); color: var(--text, #1c2b39); }
+  .modal .cal-col textarea:focus { border-color: var(--blue-500); background: #fff; }
+
+  /* ================= シンプル（GitHub風）：白とグレー基調、色はアクセントだけ ================= */
+  :root { --canvas: #f6f8fa; }
+  body { background: var(--page-bg, #fff); }
+  .account-bar, .page { border-color: var(--line); box-shadow: none; }
+  .page-header {
+    background: #fff; color: var(--text, #1f2328);
+    border-bottom: 1px solid var(--line); box-shadow: inset 0 3px 0 var(--blue-700);
+    padding: 16px 22px 14px;
+  }
+  .date-day { color: var(--text, #1f2328); }
+  .date-ym { opacity: 1; color: var(--gray-text); }
+  .date-wd { background: var(--canvas); color: var(--text, #1f2328); border: 1px solid var(--line); }
+  .place-sel { background: #fff; color: var(--text, #1f2328); border: 1px solid var(--line); }
+  .app-tools button {
+    background: var(--canvas); color: var(--text, #1f2328); border: 1px solid var(--line); font-weight: 600;
+  }
+  .app-tools button:hover { background: #eef1f4; }
+  .app-tools button .ico { color: var(--gray-text); }
+  .nav { border: 1px solid var(--line); background: #fff; }
+  .nav button, .nav button:not(:disabled) { color: var(--text, #1f2328) !important; }
+  .nav button + button { border-left: 1px solid var(--line); }
+  .nav button:hover:not(:disabled) { background: var(--canvas); }
+  .nav button:disabled { color: #9aa4ae !important; }
+  .top-end-bar, .add-row, .page-footer { background: var(--canvas); }
+  .toolbar { background: #fff; }
+  .fchip { background: #fff; border-color: var(--line); color: var(--text, #1f2328); }
+  .fchip.on { background: var(--blue-700); border-color: var(--blue-700); color: #fff; }
+  .tool-btn, .sort-sel, .btn.sub, .detail-close { background: var(--canvas); border: 1px solid var(--line); color: var(--text, #1f2328); }
+  .section-head { color: var(--text, #1f2328); border-top-color: var(--line); }
+  .section-head .ico-wrap { color: var(--gray-text); }
+  .task { border-bottom-color: color-mix(in srgb, var(--line) 60%, #fff); }
+  @media (min-width: 860px) {
+    .col-wait { background: var(--canvas) !important; border-left: 1px solid var(--line); }
+    .col-wait .task { border-color: var(--line); }
+  }
+  .wait-info .wi-type { background: var(--canvas); border: 1px solid var(--line); color: var(--text, #1f2328); }
+  .inline-detail { border-color: var(--line); }
+  .task.expanded { background: color-mix(in srgb, var(--canvas) 70%, #fff); }
+  .memo-preview { color: var(--gray-text); }
+
+  /* ================= 3色の役割分担：ベース＝面／テキスト＝文字・見出し／アクセント＝操作・強調 ================= */
+  .page-header { background: var(--canvas); }
+  .top-end-bar, .add-row, .page-footer { background: var(--canvas); }
+  .toolbar { background: #fff; }
+  .date-wd, .app-tools button, .tool-btn, .sort-sel, .btn.sub, .detail-close, .wait-info .wi-type { background: #fff; }
+  .app-tools button:hover, .tool-btn:hover { background: var(--canvas-2); }
+  .date-day { color: var(--text); font-weight: 600; }
+  .section-head { color: var(--text); }
+  .an-card, .an-kpi, .cal-col, .cal-cell { border-color: var(--line); }
+  .cal-cell.other { background: var(--canvas); }
+  .cal-col-head { background: var(--canvas); }
+  .modal { background: #fff; }
+  .an-kpi { background: var(--canvas); }
+  @media (min-width: 860px) {
+    .col-wait { background: var(--canvas) !important; }
+  }
+
+  /* 最優先：鮮やかな色で、旗・左の線・薄い背景・太字 */
+  .task.urgent:not(.done), .col-wait .task.urgent:not(.done), .task.expanded.urgent:not(.done) {
+    background: var(--urgent-bg); box-shadow: inset 4px 0 0 var(--urgent);
+  }
+  .task.urgent .txt::before { width: 14px; height: 14px; }
+  .task.urgent:not(.done) .txt { color: var(--text); font-weight: 700; }
+
+  /* 最優先（黄色）：線と背景は黄色、旗と枠は読める濃さの黄土色 */
+  .task.urgent .txt::before { background: var(--urgent-ink, var(--urgent)); }
+  .icon-btn.mark-on, .add-row .urgent-toggle.on, .add-row .urgent-toggle:hover { color: var(--urgent-ink, var(--urgent)); border-color: var(--urgent-ink, var(--urgent)); }
+
+  .th-swatch i.u { width: 10px; }
+  .th-color-u { border-left: 1px dashed var(--line); padding-left: 10px; }
+  .th-color-u.off input[type="color"], .th-color-u.off input[type="text"] { opacity: 0.4; }
+  .th-color-u input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--blue-700); }
 </style>
 <script src="https://accounts.google.com/gsi/client" async></script>
 </head>
@@ -1522,7 +1614,20 @@
     scheduleCloudSave();
   }
 
-  var state = load();
+  // 起動直後（ログイン前）は、前回ログインしたアカウントの手元の控えを表示する
+  // （ログインしていない時期の古いデータ＝過去の日付が一瞬出るのを防ぐ）
+  var LAST_SUB_KEY = "dailyTaskList.lastAccount";
+  function initialState() {
+    try {
+      var sub = localStorage.getItem(LAST_SUB_KEY);
+      if (sub && GOOGLE_CLIENT_ID) {
+        var raw = localStorage.getItem(LEGACY_KEY + "::" + sub);
+        if (raw) { var s0 = JSON.parse(raw); if (s0 && s0.currentDate && s0.days) return ensureShape(s0); }
+      }
+    } catch (e) { /* 読めなければ通常どおり */ }
+    return load();
+  }
+  var state = initialState();
   var viewDate = state.currentDate;
   var draggingId = null;
   var filter = ""; // "" | "wait" | "tag:<id>"
@@ -2580,10 +2685,24 @@
     for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
     return THEMES[0];
   }
+  function hueOf(h) {
+    var c = hexRgb(h).map(function (v) { return v / 255; });
+    var mx = Math.max.apply(null, c), mn = Math.min.apply(null, c), d = mx - mn;
+    if (!d) return -1; // 無彩色
+    var hu = mx === c[0] ? ((c[1] - c[2]) / d) % 6 : mx === c[1] ? (c[2] - c[0]) / d + 2 : (c[0] - c[1]) / d + 4;
+    return (hu * 60 + 360) % 360;
+  }
+  // 鮮やかなオレンジを基本に、アクセントが赤〜茶系なら鮮やかな青を使う（期限切れの赤とも区別）
+  // 基本は黄色。アクセントが黄色〜オレンジ系で紛れる場合だけ鮮やかな青
+  function urgentColorFor(accent) {
+    var hu = hueOf(accent);
+    if (hu >= 25 && hu <= 70) return "#1C6FD6";
+    return "#F5B800";
+  }
   var appliedThemeKey = "";
   function applyTheme(th) {
     th = th || currentTheme();
-    var key = th.a + th.b + th.t;
+    var key = th.a + th.b + th.t + (th.u || "");
     if (key === appliedThemeKey) return;
     appliedThemeKey = key;
     // 白文字が読める濃さまでアクセントを調整（淡い色でもボタンが読めるように）
@@ -2595,17 +2714,35 @@
     r.setProperty("--blue-100", mixHex(th.a, "#ffffff", 0.84));
     r.setProperty("--blue-050", mixHex(th.a, "#ffffff", 0.93));
     r.setProperty("--blue-900", mixHex(th.t, strong, 0.28));
-    r.setProperty("--page-bg", th.b);
+    r.setProperty("--page-bg", mixHex(lum(th.b) > 0.93 ? mixHex(th.b, th.a, 0.07) : th.b, th.t, 0.04));
+    // 最優先・「今日まで」などの強調色もテーマのアクセントに合わせる（期限切れの赤だけは固定）
+    // 最優先は、どの配色でも目立つ「鮮やかな色」。アクセントと似た色相なら別の色にする
+    var urg = th.u && validHex(th.u) ? normHex(th.u) : urgentColorFor(th.a);
+    r.setProperty("--urgent", urg);
+    r.setProperty("--urgent-bg", mixHex(urg, "#ffffff", 0.86));
+    // 白地でも読める濃さの同系色（旗・文字・枠用）
+    var urgInk = urg;
+    for (var u = 0; u < 12 && contrast(urgInk, "#ffffff") < 2.6; u++) urgInk = mixHex(urgInk, "#5a3d00", 0.15);
+    r.setProperty("--urgent-ink", urgInk);
+    r.setProperty("--attn", mixHex(strong, th.t, 0.15));
+    r.setProperty("--attn-bg", mixHex(th.a, "#ffffff", 0.82));
     r.setProperty("--text", th.t);
     r.setProperty("--gray-text", mixHex(th.t, "#ffffff", 0.42));
-    r.setProperty("--line", mixHex(mixHex(th.a, th.t, 0.4), "#ffffff", 0.82));
+    // 枠線・面はGitHubのような落ち着いたグレー（テーマの色をほんの少しだけ混ぜる）
+    // ベース色：上部・入力欄まわり・右の列などの「面」に使う。白に近すぎるときは少しだけ色を足して見えるように
+    var base = th.b;
+    if (lum(base) > 0.93) base = mixHex(base, th.a, 0.07);
+    r.setProperty("--canvas", base);
+    r.setProperty("--canvas-2", mixHex(base, th.t, 0.05));
+    // 枠線はベースとテキストの中間（配色になじむグレー）
+    r.setProperty("--line", mixHex(base, th.t, 0.16));
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", strong);
     AN_C_DONE = strong; AN_C_ONE = strong; AN_C_NEW = mixHex(strong, "#ffffff", 0.45);
   }
   function themeSwatch(th) {
     var w = el("span", "th-swatch");
-    [th.a, th.b, th.t].forEach(function (c) { var i = el("i"); i.style.background = c; w.appendChild(i); });
+    [th.a, th.b, th.t].concat(th.u ? [th.u] : []).forEach(function (c, k) { var i = el("i", k === 3 ? "u" : null); i.style.background = c; w.appendChild(i); });
     return w;
   }
   function themePanel(onDone) {
@@ -2622,7 +2759,7 @@
         b.appendChild(themeSwatch(th));
         var tx = el("span", "th-text");
         tx.appendChild(el("b", null, th.name));
-        tx.appendChild(el("small", null, (th.note ? th.note + "・" : "") + th.a + " / " + th.b + " / " + th.t));
+        tx.appendChild(el("small", null, (th.note ? th.note + "・" : "") + th.a + " / " + th.b + " / " + th.t + (th.u ? " / 最優先 " + th.u : "")));
         b.appendChild(tx);
         b.addEventListener("click", function () { state.themeId = th.id; applyTheme(th); save(); draw(); });
         if (th.custom) {
@@ -2643,7 +2780,7 @@
     draw();
     // 自分で追加
     var add = el("div", "th-add");
-    add.appendChild(el("div", "dl-label", "＋ 配色を追加（3色を指定）"));
+    add.appendChild(el("div", "dl-label", "＋ 配色を追加（基本の3色＋お好みで最優先の色）"));
     var nm = document.createElement("input");
     nm.type = "text"; nm.placeholder = "配色の名前（例：ラベンダー）"; nm.className = "th-name";
     add.appendChild(nm);
@@ -2660,24 +2797,40 @@
       row.appendChild(w);
       inputs[f[0]] = hex;
     });
+    // 4色目：最優先の色（任意。指定しなければ黄色）
+    var uw = el("label", "th-color th-color-u");
+    var uon = document.createElement("input"); uon.type = "checkbox";
+    uw.appendChild(uon);
+    uw.appendChild(el("span", null, "最優先の色を指定"));
+    var upick = document.createElement("input"); upick.type = "color"; upick.value = "#f5b800";
+    var uhex = document.createElement("input"); uhex.type = "text"; uhex.value = "#F5B800"; uhex.maxLength = 7;
+    function uState() { upick.disabled = uhex.disabled = !uon.checked; uw.classList.toggle("off", !uon.checked); preview(); }
+    uon.addEventListener("change", uState);
+    upick.addEventListener("input", function () { uhex.value = upick.value.toUpperCase(); preview(); });
+    uhex.addEventListener("input", function () { if (validHex(uhex.value)) { upick.value = normHex(uhex.value).toLowerCase(); preview(); } });
+    uw.appendChild(upick); uw.appendChild(uhex);
+    row.appendChild(uw);
     add.appendChild(row);
+    add.appendChild(el("div", "muted", "最優先の色を指定しない場合は黄色になります（アクセントが黄色系のときは青）。"));
     var pv = el("div", "th-preview");
     add.appendChild(pv);
-    function vals() { return { a: inputs.a.value, b: inputs.b.value, t: inputs.t.value }; }
+    function vals() { return { a: inputs.a.value, b: inputs.b.value, t: inputs.t.value, u: uon && uon.checked ? uhex.value : "" }; }
     function preview() {
       var v = vals();
       pv.innerHTML = "";
       if (![v.a, v.b, v.t].every(validHex)) { pv.textContent = "カラーコードは #RRGGBB の形で入力してください"; return; }
-      pv.appendChild(themeSwatch({ a: normHex(v.a), b: normHex(v.b), t: normHex(v.t) }));
+      if (v.u && !validHex(v.u)) { pv.textContent = "最優先の色は #RRGGBB の形で入力してください"; return; }
+      pv.appendChild(themeSwatch({ a: normHex(v.a), b: normHex(v.b), t: normHex(v.t), u: v.u ? normHex(v.u) : "" }));
       var c = contrast(normHex(v.t), normHex(v.b));
       pv.appendChild(el("span", "th-note", c < 4.5 ? "テキストとベースの差が小さく、文字が読みにくいかもしれません" : "見やすさ OK"));
     }
-    preview();
+    uState();
     var btn = el("button", "btn", "追加して使う");
     btn.addEventListener("click", function () {
       var v = vals();
-      if (![v.a, v.b, v.t].every(validHex)) { preview(); return; }
+      if (![v.a, v.b, v.t].every(validHex) || (v.u && !validHex(v.u))) { preview(); return; }
       var th = { id: "c" + Date.now(), name: nm.value.trim() || "マイ配色", a: normHex(v.a), b: normHex(v.b), t: normHex(v.t), note: "" };
+      if (v.u) th.u = normHex(v.u);
       state.customThemes = (state.customThemes || []).concat([th]);
       state.themeId = th.id;
       applyTheme(th); save(); draw();
@@ -4152,6 +4305,7 @@
           name: info.name || info.email || "",
           picture: info.picture || ""
         };
+        try { localStorage.setItem(LAST_SUB_KEY, info.sub); } catch (e) { /* 無視 */ }
       });
   }
 
@@ -4287,6 +4441,11 @@
   elLogoutBtn.addEventListener("click", doLogout);
   elLocalOnly.addEventListener("click", function () {
     localOnlySession = true;
+    // この端末だけのデータに切り替える
+    state = loadFrom(LEGACY_KEY);
+    viewDate = state.currentDate;
+    filter = "";
+    render();
     updateAccountUI();
   });
 
