@@ -985,6 +985,10 @@
   .place-btn.on.p-3, .place-chip.p-3 { background: #7b4fb0; }
   .place-note { font-size: 11.5px; color: #5b3d8a; padding: 4px 10px 0; word-break: break-word; }
   .place-chip { font-size: 10.5px; color: #fff; padding: 0 6px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70px; line-height: 1.6; }
+
+  .place-btn.on.auto { background: #fff; color: #5f6b77; border: 1px dashed #8a94a0; }
+  .place-chip.auto { background: #fff; color: #5f6b77; border: 1px dashed #8a94a0; line-height: 1.45; }
+  .place-note.auto { color: var(--gray-text); }
 </style>
 <script src="https://accounts.google.com/gsi/client" async></script>
 </head>
@@ -1078,7 +1082,7 @@
       新規タスクは「一番上」に追加されます。締切を設定したタスクは「期限が近い順」に自動で並びます（期限なしのタスクが上、期限ありがその下に期限の近い順）。<br>
       「🗓 カレンダー」で、月表示と週表示（月〜日を左から右へ）を切り替えて、締切・フォロー日・繰り返し予定・完了したタスクを確認できます。週表示では日ごとにメモを書けます（自動保存）。<br>
       日付の横の「勤務場所」と、カレンダーの週表示で、日ごとに「休日・中野・三郷・その他」を記録できます。週表示の「📋 LINE用にコピー」で、その週の勤務場所とメモをLINEに貼れる文章でコピーできます。<br>
-      カレンダーの「🔗 LINE WORKS」から、LINE WORKSカレンダーのiCal URLを登録すると、LINE WORKSの予定がこのカレンダー（週・月）にも表示されます（開くたびに30分おきに自動更新）。<br>
+      カレンダーの「🔗 LINE WORKS」から、LINE WORKSカレンダーのiCal URLを登録すると、LINE WORKSの予定がこのカレンダー（週・月）にも表示されます（開くたびに30分おきに自動更新）。LINE WORKSに「休日・代休・有給・午前休」などの予定があれば、その日の勤務場所が自動で「休日」になります（手で選んだ場所が優先）。<br>
       「📊 分析」で、これまでに完了したタスクを1か月・半年・1年ごとに振り返れます（完了数・かかった日数・締切内の割合・分野別など。CSVで書き出しも可）。<br>
       並び順は上の「並び順」で選べます（締切日の近い順・遠い順／登録の古い順・新しい順／手動）。★を付けたタスクは常に一番上、締切日順では締切未設定のタスクがその次に来ます。☰ドラッグでの入れ替えは「手動」のときに使えます。<br>
       ⏳ボタンで「返事待ち・確認待ち・承認待ち・保留」を付けると、リスト下の「相手待ち」欄に移り、毎日そのまま繰り越されます。相手やフォロー日もメモでき、フォロー日が来るとオレンジで知らせます。戻ってきたら⏳→「戻ってきた」で一番上に戻ります。<br>
@@ -1086,7 +1090,7 @@
       「🔁 繰り返し」で、毎日・平日・毎週○曜・毎月○日（月末も可）に自動で出るタスクを登録できます。前回分が未完了のまま残っている場合は重複して出しません。<br>
       「本日終了」（上部・下部どちらのボタンでも可）を押すと、次のページの日付を「翌日」「次の営業日（土日・祝日を飛ばす）」「日付を指定」から選べます。連休や出張で数日空くときに使ってください。<br>
       「本日終了」を押し間違えたら、「取り消し」ボタン（終了後に黄色く押せるようになります）で前日に戻せます（翌日に追加・変更した分は残ります）。<br>
-      <span class="ver">ver 2026-11-27i（LINE WORKS予定の表示）</span><br>
+      <span class="ver">ver 2026-11-27j（LINE WORKSの休日を勤務場所に反映）</span><br>
       Googleでログインすると、各自のGoogleドライブに保存され、PC・携帯のどの端末でも同じ内容が表示されます（3人それぞれのアカウントで各自のタスクのみ表示）。
     </p>
   </div>
@@ -1824,7 +1828,7 @@
     var ps = document.getElementById("placeSel");
     var pl = placeOf(viewDate);
     ps.value = pl.p || "";
-    ps.title = "この日の勤務場所" + (pl.note ? "（" + pl.note + "）" : "");
+    ps.title = "この日の勤務場所" + (pl.note ? "（" + pl.note + "）" : "") + (pl.auto ? "：LINE WORKSの予定から自動" : "");
     ps.disabled = false;
 
     document.getElementById("pastBanner").style.display = isCurrent ? "none" : "block";
@@ -2185,7 +2189,21 @@
 
   /* ---- 勤務場所（休日・中野・三郷・その他） ---- */
   var PLACES = ["休日", "中野", "三郷", "その他"];
-  function placeOf(d) { return (state.places && state.places[d]) || {}; }
+  // LINE WORKSの予定のうち「休み」を表すもの（休日・代休・有給・午前休など）
+  var EXT_OFF_RE = /(休日|休み|有給|有休|代休|振休|振替休|公休|全休|午前休|午後休|半休|休暇)/;
+  function extOffOn(d) {
+    var ev = (state.ext && state.ext.events) || [];
+    for (var i = 0; i < ev.length; i++) if (ev[i].d === d && EXT_OFF_RE.test(ev[i].title)) return ev[i];
+    return null;
+  }
+  // 手入力が優先。なければLINE WORKSの「休日」系の予定から自動で「休日」
+  function placeOf(d) {
+    var manual = state.places && state.places[d];
+    if (manual && manual.p) return manual;
+    var off = extOffOn(d);
+    if (off) return { p: "休日", note: off.title.trim() === "休日" ? "" : off.title.trim(), auto: true };
+    return {};
+  }
   function setPlace(d, p, note) {
     if (!state.places) state.places = {};
     if (!p) delete state.places[d];
@@ -2195,13 +2213,15 @@
   function placeLabel(d) {
     var pl = placeOf(d);
     if (!pl.p) return "";
+    if (pl.auto) return pl.note || "休日";
     return pl.p === "その他" && pl.note ? pl.note : pl.p;
   }
   function placeChip(d) {
     var pl = placeOf(d);
     if (!pl.p) return null;
     var c = el("span", "place-chip p-" + PLACES.indexOf(pl.p), placeLabel(d));
-    c.title = "勤務場所：" + pl.p + (pl.note ? "（" + pl.note + "）" : "");
+    c.title = "勤務場所：" + pl.p + (pl.note ? "（" + pl.note + "）" : "") + (pl.auto ? "\nLINE WORKSの予定から自動" : "");
+    if (pl.auto) c.className += " auto";
     return c;
   }
 
@@ -2343,9 +2363,11 @@
           var prow = el("div", "place-row");
           var cur = placeOf(d);
           PLACES.forEach(function (p, k) {
-            var b = el("button", "place-btn p-" + k + (cur.p === p ? " on" : ""), p);
+            var b = el("button", "place-btn p-" + k + (cur.p === p ? " on" : "") + (cur.p === p && cur.auto ? " auto" : ""), p);
+            if (cur.p === p && cur.auto) b.title = "LINE WORKSの予定（" + (cur.note || "休日") + "）から自動。押すと手入力で確定します";
             b.addEventListener("click", function () {
-              if (cur.p === p) { setPlace(d, "", ""); }
+              if (cur.p === p && cur.auto) { setPlace(d, p, ""); }
+              else if (cur.p === p) { setPlace(d, "", ""); }
               else if (p === "その他") {
                 var nt = (window.prompt("場所を入力してください（例：現場名・在宅など）", cur.note || "") || "").trim();
                 setPlace(d, p, nt);
@@ -2356,6 +2378,7 @@
           });
           col.appendChild(prow);
           if (cur.p === "その他" && cur.note) col.appendChild(el("div", "place-note", "📍 " + cur.note));
+          if (cur.auto) col.appendChild(el("div", "place-note auto", "LINE WORKSより：" + (cur.note || "休日")));
 
           var ta = document.createElement("textarea");
           ta.placeholder = "メモ（予定・メモなど）";
@@ -2373,7 +2396,7 @@
             items.forEach(function (x) { s.appendChild(x); });
             col.appendChild(s);
           }
-          sec("LINE WORKSの予定", extEventsOn(d).map(function (x) { return calExtItem(x, false); }));
+          sec("LINE WORKSの予定", extEventsOn(d).filter(function (x) { return !EXT_OFF_RE.test(x.title); }).map(function (x) { return calExtItem(x, false); }));
           sec("締切", (idx.due[d] || []).map(function (t) {
             return calItem("due" + (d < state.currentDate ? " over" : "") + (t.urgent ? " urgent" : ""), (t.urgent ? "★ " : "") + t.text);
           }));
@@ -2410,7 +2433,7 @@
           cell.appendChild(top);
           var memo = calMemo(d);
           if (memo) { var mm = el("div", "cal-memo", memo.split("\n")[0]); mm.title = memo; cell.appendChild(mm); }
-          var items = extEventsOn(d).map(function (x) { return calExtItem(x, true); });
+          var items = extEventsOn(d).filter(function (x) { return !EXT_OFF_RE.test(x.title); }).map(function (x) { return calExtItem(x, true); });
           (idx.due[d] || []).forEach(function (t) { items.push(calItem("due" + (d < state.currentDate ? " over" : "") + (t.urgent ? " urgent" : ""), (t.urgent ? "★" : "") + t.text.split("\n")[0], t.text)); });
           (idx.follow[d] || []).forEach(function (t) { items.push(calItem("follow", t.text.split("\n")[0], t.text)); });
           calRecur(d).forEach(function (r) { items.push(calItem("recur", r.text)); });
